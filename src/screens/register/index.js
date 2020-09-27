@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Constants from "expo-constants";
-import { View, StyleSheet, KeyboardAvoidingView, Platform } from "react-native";
+import {
+  View,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import {
   ButtonGroup,
   Text,
@@ -10,12 +16,15 @@ import {
 } from "react-native-elements";
 import { Colors, Spacing, Typography, Mixins } from "../../styles/index";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { ScrollView } from "react-native-gesture-handler";
+import { registerEmployee } from "../../api/employees";
+import { registerEmployer } from "../../api/employers";
+import { sendVerificationEmail } from "../../api/emails";
 
 const buttons = ["İşveren", "Çalışan"];
 
 function RegisterScreen({ navigation }) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isRegistered, setIsRegistered] = useState(false);
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [email, setEmail] = useState("");
@@ -23,12 +32,90 @@ function RegisterScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
   const [address, setAddress] = useState("");
+  const [passwordsMatched, setPasswordsMatched] = useState(null);
+  const [verificationCode, setVerificationCode] = useState(null);
+  const [enteredVerificationCode, setEnteredVerificationCode] = useState("");
+  const [verificationCodeMatched, setVerificationCodeMatched] = useState(null);
+  const [emailError, setEmailError] = useState(false);
 
   const updateSelectedIndex = (index) => {
     setSelectedIndex(index);
   };
 
-  return (
+  const register = async () => {
+    if (password === passwordRepeat) {
+      setPasswordsMatched(true);
+      if (selectedIndex === 0) {
+        registerEmployer(
+          { name, surname, email, phone, address, password },
+          (data) => {
+            setIsRegistered(true);
+            sendVerificationEmail(
+              email,
+              (data) => {
+                setVerificationCode(data.data.verificationCode);
+              },
+              (err) => console.log(err.response.data)
+            );
+          },
+          (err) => {
+            console.log(err.response.data);
+            if (err.response.data.detail === "Email already in use.") {
+              setEmailError(true);
+            }
+          }
+        );
+      } else if (selectedIndex === 1) {
+        registerEmployee(
+          { name, surname, email, phone, address, password },
+          (data) => {
+            setIsRegistered(true);
+            sendVerificationEmail(
+              email,
+              (data) => {
+                setVerificationCode(data.data.verificationCode);
+                console.log(data.data.verificationCode);
+              },
+              (err) => console.log(err.response.data)
+            );
+          },
+          (err) => {
+            console.log(err.response.data);
+            if (err.response.data.detail === "Email already in use.") {
+              setEmailError(true);
+            }
+          }
+        );
+      }
+    } else {
+      setPasswordsMatched(false);
+    }
+  };
+
+  const removeInputTexts = () => {
+    setName("");
+    setSurname("");
+    setEmail("");
+    setPhone("");
+    setPassword("");
+    setPasswordRepeat("");
+    setAddress("");
+    setPasswordsMatched(null);
+  };
+
+  const verifyCode = () => {
+    if (verificationCode.toString() === enteredVerificationCode) {
+      navigation.navigate("Login");
+    } else {
+      setVerificationCodeMatched(false);
+    }
+  };
+
+  useEffect(() => {
+    removeInputTexts();
+  }, [selectedIndex]);
+
+  return !isRegistered ? (
     <KeyboardAvoidingView
       enabled
       behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -66,41 +153,56 @@ function RegisterScreen({ navigation }) {
                   placeholder={
                     selectedIndex === 0 ? "İşveren Adı" : "Çalışan Adı"
                   }
-                  onChange={(text) => setName(text)}
+                  onChangeText={(text) => setName(text)}
                 />
                 <Input
                   value={surname}
                   placeholder={
                     selectedIndex === 0 ? "İşveren Soyadı" : "Çalışan Soyadı"
                   }
-                  onChange={(text) => setSurname(text)}
+                  onChangeText={(text) => setSurname(text)}
                 />
                 <Input
                   value={email}
                   placeholder="Eposta"
-                  onChange={(text) => setEmail(text)}
+                  onChangeText={(text) => setEmail(text)}
+                  autoCapitalize="none"
+                  errorMessage={
+                    emailError === true
+                      ? "Bu eposta ile önceden hesap oluşturulmuştur."
+                      : ""
+                  }
                 />
                 <Input
                   value={phone}
                   placeholder="Telefon"
-                  onChange={(text) => setPhone(text)}
+                  onChangeText={(text) => setPhone(text)}
+                  autoCapitalize="none"
                 />
                 <Input
                   value={address}
                   placeholder="Adres"
-                  onChange={(text) => setAddress(text)}
+                  onChangeText={(text) => setAddress(text)}
+                  autoCapitalize="none"
                 />
                 <Input
                   value={password}
                   placeholder="Şifre"
                   secureTextEntry={true}
-                  onChange={(text) => setPassword(text)}
+                  onChangeText={(text) => setPassword(text)}
+                  autoCapitalize="none"
+                  textContentType="oneTimeCode"
+                  errorMessage={
+                    passwordsMatched === false ? "Şifreler eşleşmedi." : ""
+                  }
                 />
                 <Input
                   value={passwordRepeat}
                   placeholder="Şifre Tekrar"
                   secureTextEntry={true}
-                  onChange={(text) => setPasswordRepeat(text)}
+                  onChangeText={(text) => setPasswordRepeat(text)}
+                  autoCapitalize="none"
+                  textContentType="oneTimeCode"
                 />
               </View>
             </View>
@@ -109,7 +211,7 @@ function RegisterScreen({ navigation }) {
         {selectedIndex !== -1 && (
           <View style={styles.buttonContainer}>
             <Button
-              onPress={() => navigation.navigate("Register")}
+              onPress={() => register()}
               icon={
                 <Icon
                   name="user-plus"
@@ -150,6 +252,46 @@ function RegisterScreen({ navigation }) {
         )}
       </ScrollView>
     </KeyboardAvoidingView>
+  ) : (
+    <View style={styles.container}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          marginTop: Mixins.WINDOW_HEIGHT / 3,
+        }}
+      >
+        <View style={styles.registerBlock}>
+          <View style={styles.verificationHeadingContainer}>
+            <Text h4 style={styles.verificationHeading}>
+              Epostanıza gönderdiğimiz doğrulama kodunu giriniz.
+            </Text>
+          </View>
+          <Input
+            value={enteredVerificationCode}
+            placeholder="Doğrulama Kodu"
+            onChangeText={(text) => setEnteredVerificationCode(text)}
+            autoCapitalize="none"
+            errorMessage={
+              verificationCodeMatched === false
+                ? "Girdiğiniz doğrulama kodu yanlış."
+                : ""
+            }
+          />
+          <Button
+            onPress={() => verifyCode()}
+            buttonStyle={{
+              marginHorizontal: Spacing.SCALE_8,
+              borderColor: Colors.PRIMARY,
+            }}
+            containerStyle={{
+              paddingBottom: 2,
+            }}
+            title={"Onayla"}
+          />
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -182,5 +324,14 @@ const styles = StyleSheet.create({
   buttonContainer: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  verificationHeadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    marginBottom: 8,
+  },
+  verificationHeading: {
+    color: Colors.SECONDARY,
   },
 });
