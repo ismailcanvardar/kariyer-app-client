@@ -23,7 +23,7 @@ function AdvertsScreen({ navigation }) {
     getMyAdverts(
       userToken,
       (data) => {
-        console.log(data.data);
+        // console.log(data.data);
         setRefreshing(false);
         setMyAdverts(data.data);
       },
@@ -80,7 +80,9 @@ function AdvertsScreen({ navigation }) {
             bottomDivider
           >
             <ListItem.Content style={{ paddingHorizontal: 12 }}>
-              <ListItem.Title style={{ color: Colors.SECONDARY }}>
+              <ListItem.Title
+                style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+              >
                 {item.title} - {timeDifference(item.createdAt)}
               </ListItem.Title>
               <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>

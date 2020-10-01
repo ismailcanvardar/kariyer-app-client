@@ -4,6 +4,12 @@ import { Overlay, ListItem } from "react-native-elements";
 import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import Constants from "expo-constants";
 
+const VIEWABILITY_CONFIG = {
+  minimumViewTime: 300,
+  viewAreaCoveragePercentThreshold: 100,
+  waitForInteraction: true,
+};
+
 function NeighborhoodsOverlay({
   neighborhoodOverlayVisible,
   neighborhoods,
@@ -18,6 +24,8 @@ function NeighborhoodsOverlay({
     >
       <View style={styles.container}>
         <FlatList
+          removeClippedSubviews={true}
+          viewabilityConfig={VIEWABILITY_CONFIG}
           data={neighborhoods}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, index }) => (

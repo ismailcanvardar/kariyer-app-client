@@ -7,10 +7,12 @@ import ApplicationsScreen from "../screens/applications/index";
 import AdvertsScreen from "../screens/adverts/index";
 import AddAdvertScreen from "../screens/add-advert/index";
 import AdvertPreviewScreen from "../screens/advert-preview/index";
+import SearchedAdvert from "../screens/searched-advert/index";
 import { AuthContext } from "../contexts/AuthProvider";
-import { Colors } from "../styles/index";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { createStackNavigator } from "@react-navigation/stack";
+import { Button } from "react-native-elements";
+import { Colors, Spacing, Mixins, Typography } from "../styles/index";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -42,6 +44,66 @@ const AdvertsStack = () => (
     />
   </Stack.Navigator>
 );
+
+const SearchStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Search"
+      options={{ headerShown: false }}
+      component={SearchScreen}
+    />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "İlan",
+      }}
+      name="SearchedAdvert"
+      component={SearchedAdvert}
+    />
+  </Stack.Navigator>
+);
+
+const ProfileStack = () => {
+  const { logoutUser } = useContext(AuthContext);
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        options={{
+          headerStyle: { backgroundColor: Colors.PRIMARY },
+          headerTintColor: Colors.WHITE,
+          headerTitle: "Profil",
+          headerRight: () => {
+            return (
+              <Button
+                onPress={() => logoutUser()}
+                icon={
+                  <Icon
+                    name="sign-out"
+                    size={15}
+                    color="white"
+                    style={{ marginRight: 5 }}
+                  />
+                }
+                titleStyle={{
+                  color: Colors.WHITE,
+                }}
+                buttonStyle={{
+                  marginHorizontal: Spacing.SCALE_8,
+                }}
+                title="Çıkış"
+                type="clear"
+              />
+            );
+          },
+        }}
+        name="Profile"
+        component={ProfileScreen}
+      />
+    </Stack.Navigator>
+  );
+};
 
 const TabNavigator = () => {
   const { userRole } = useContext(AuthContext);
@@ -89,7 +151,7 @@ const TabNavigator = () => {
           tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "search"),
           tabBarLabel: "Ara",
         }}
-        component={SearchScreen}
+        component={SearchStack}
       />
       <Screen
         name="Profile"
@@ -97,7 +159,7 @@ const TabNavigator = () => {
           tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "user"),
           tabBarLabel: "Profil",
         }}
-        component={ProfileScreen}
+        component={ProfileStack}
       />
     </Navigator>
   );
