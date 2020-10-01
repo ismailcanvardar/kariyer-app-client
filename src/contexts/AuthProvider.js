@@ -16,14 +16,14 @@ const AuthProvider = ({ children }) => {
     } else {
       setIsUserLoggedIn(true);
       const savedUser = JSON.parse(user);
-      setUserToken(saveUser.token);
-      setUserRole(saveUser.role);
+      setUserToken(savedUser.token);
+      setUserRole(savedUser.role);
     }
   };
 
   const saveUser = async (token, role) => {
     const user = { token, role };
-    await AsyncStorage.setItem("user", user.toString());
+    await AsyncStorage.setItem("user", JSON.stringify(user));
     setIsUserLoggedIn(true);
     setUserToken(token);
     setUserRole(role);
@@ -39,7 +39,9 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isUserLoggedIn, saveUser, logoutUser }}>
+    <AuthContext.Provider
+      value={{ isUserLoggedIn, userToken, userRole, saveUser, logoutUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-function HomeScreen() {
+function AdvertPreviewScreen() {
   return (
     <View>
-      <Text>Hi</Text>
+      <Text>AdvertPreviewScreen</Text>
     </View>
   );
 }
 
-export default HomeScreen;
+export default AdvertPreviewScreen;

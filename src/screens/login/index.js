@@ -46,10 +46,10 @@ function LoginScreen({ navigation }) {
         { email, password },
         (data) => {
           saveUser(data.data.token, "employer");
-          console.log(data.data.token);
+          // console.log(data.data.token);
         },
         (err) => {
-          console.log(err.response.data);
+          // console.log(err.response.data);
           if (err.response.data.title === "Wrong Credentials") {
             setLoginError(true);
           }

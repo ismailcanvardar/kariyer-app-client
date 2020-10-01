@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_ENDPOINT } from "../constants/env";
+import { headerSetter } from "../helpers/header-setter";
 
 export const registerEmployer = (data, callback, errorcallback) => {
   axios
@@ -39,6 +40,17 @@ export const searchEmployers = (data, callback, errorcallback) => {
     .get(
       `${API_ENDPOINT}/employers/findEmployers/${data.searchCriteria}/${data.offset}/${data.limit}`
     )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
+export const getMyEmployerProfile = (token, callback, errorcallback) => {
+  axios
+    .get(`${API_ENDPOINT}/employers/getMyProfile`, headerSetter(token))
     .then((res) => {
       callback !== null && callback(res);
     })
