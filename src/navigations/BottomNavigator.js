@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import HomeScreen from "../screens/home/index";
 import SearchScreen from "../screens/search/index";
 import ProfileScreen from "../screens/profile/index";
 import ApplicationsScreen from "../screens/applications/index";
@@ -16,6 +17,16 @@ import { Colors, Spacing, Mixins, Typography } from "../styles/index";
 
 const { Navigator, Screen } = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const HomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Home"
+      options={{ headerShown: false }}
+      component={HomeScreen}
+    />
+  </Stack.Navigator>
+);
 
 const AdvertsStack = () => (
   <Stack.Navigator>
@@ -112,7 +123,7 @@ const TabNavigator = () => {
     return (
       <Icon
         name={iconName}
-        size={tabInfo.focused ? 20 : 15}
+        size={tabInfo.focused ? 24 : 24}
         color={tabInfo.focused ? Colors.WHITE : Colors.GRAY_MEDIUM}
       />
     );
@@ -121,11 +132,29 @@ const TabNavigator = () => {
   return (
     <Navigator
       tabBarOptions={{
-        tabStyle: { backgroundColor: Colors.PRIMARY },
-        inactiveTintColor: Colors.GRAY_MEDIUM,
+        indicatorStyle: {
+          height: null,
+          top: 0,
+          backgroundColor: "red",
+          borderBottomColor: "black",
+          borderBottomWidth: 3,
+        },
         activeTintColor: Colors.WHITE,
+        pressColor: "white",
+        style: {
+          backgroundColor: Colors.PRIMARY,
+        },
+        labelStyle: { fontSize: 13 },
       }}
     >
+      <Screen
+        options={{
+          tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "home"),
+          tabBarLabel: "Anasayfa",
+        }}
+        name="Home"
+        component={HomeStack}
+      />
       {userRole === "employer" ? (
         <Screen
           name="Adverts"
