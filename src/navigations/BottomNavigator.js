@@ -59,7 +59,7 @@ const SearchStack = () => (
         headerTitle: "İlan",
       }}
       name="SearchedAdvert"
-      component={SearchedAdvert}
+      component={AdvertPreviewScreen}
     />
   </Stack.Navigator>
 );

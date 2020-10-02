@@ -76,7 +76,7 @@ function AdvertsScreen({ navigation }) {
         renderItem={({ item, index }) => (
           <ListItem
             key={item.advertId}
-            onPress={() => navigation.navigate("AdvertPreview")}
+            onPress={() => navigation.navigate("AdvertPreview", { ...item })}
             bottomDivider
           >
             <ListItem.Content style={{ paddingHorizontal: 12 }}>

@@ -5,7 +5,7 @@ import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { getMyEmployeeProfile } from "../../api/employees";
 import { getMyEmployerProfile } from "../../api/employers";
-import { Avatar, Text, Divider, ListItem } from "react-native-elements";
+import { Avatar, Text, Divider, ListItem, Badge } from "react-native-elements";
 
 function ProfileScreen() {
   const [user, setUser] = useState(null);
@@ -36,37 +36,44 @@ function ProfileScreen() {
       {user !== null ? (
         <>
           <View style={styles.avatarHolder}>
-            {user.profilePhoto !== null ? (
-              <Avatar
-                size={Mixins.WINDOW_WIDTH / 3}
-                rounded
-                // source={{
-                //   uri:
-                //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-                // }}
-                title="TK"
-                onPress={() => null}
-                activeOpacity={0.7}
-                containerStyle={{
-                  backgroundColor: Colors.PRIMARY,
-                }}
+            <View>
+              {user.profilePhoto !== null ? (
+                <Avatar
+                  size={Mixins.WINDOW_WIDTH / 3}
+                  rounded
+                  // source={{
+                  //   uri:
+                  //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
+                  // }}
+                  title="TK"
+                  onPress={() => null}
+                  activeOpacity={0.7}
+                  containerStyle={{
+                    backgroundColor: Colors.PRIMARY,
+                  }}
+                />
+              ) : (
+                <Avatar
+                  size={Mixins.WINDOW_WIDTH / 3}
+                  rounded
+                  // source={{
+                  //   uri:
+                  //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
+                  // }}
+                  title="TK"
+                  onPress={() => null}
+                  activeOpacity={0.7}
+                  containerStyle={{
+                    backgroundColor: Colors.PRIMARY,
+                  }}
+                />
+              )}
+              <Badge
+                value={userRole === "employee" ? "Çalışan" : "İşveren"}
+                status="success"
+                containerStyle={{ position: "absolute", top: -4, right: -4 }}
               />
-            ) : (
-              <Avatar
-                size={Mixins.WINDOW_WIDTH / 3}
-                rounded
-                // source={{
-                //   uri:
-                //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
-                // }}
-                title="TK"
-                onPress={() => null}
-                activeOpacity={0.7}
-                containerStyle={{
-                  backgroundColor: Colors.PRIMARY,
-                }}
-              />
-            )}
+            </View>
           </View>
           <View style={styles.nameHolder}>
             <Text h4 style={{ color: Colors.SECONDARY }}>

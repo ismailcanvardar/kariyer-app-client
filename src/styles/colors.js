@@ -5,7 +5,7 @@ export const BLACK = "#000000";
 
 // ACTIONS
 export const SUCCESS = "#61B52D";
-export const INFO = "#02A3F9";
+export const INFO = "#33DDE0";
 export const WARNING = "#F9CF43";
 export const DANGER = "#FF5230";
 export const BACKGROUND = "#EAE2FC";

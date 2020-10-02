@@ -34,7 +34,7 @@ const SearchedAdverts = ({
         renderItem={({ item, index }) => (
           <ListItem
             key={item.advertId}
-            onPress={() => navigation.navigate("SearchedAdvert")}
+            onPress={() => navigation.navigate("SearchedAdvert", { ...item })}
             bottomDivider
             containerStyle={{ borderRadius: 50 }}
           >
