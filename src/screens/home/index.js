@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, SafeAreaView } from "react-native";
-import { SearchBar } from "react-native-elements";
+import { View, StyleSheet, SafeAreaView } from "react-native";
+import { SearchBar, Text, Divider } from "react-native-elements";
 import Constants from "expo-constants";
 import { Colors, Spacing, Typography, Mixins } from "../../styles/index";
 
@@ -20,6 +20,12 @@ const HomeScreen = () => {
           backgroundColor: Colors.WHITE,
         }}
       />
+      <View style={styles.searchBarBottom}>
+        <Text h4 style={styles.heading}>
+          Yakınımdaki İlanlar
+        </Text>
+        <Divider />
+      </View>
     </View>
   );
 };
@@ -31,5 +37,15 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: Constants.statusBarHeight,
     backgroundColor: Colors.BACKGROUND,
+  },
+  searchBarBottom: {
+    // flex: 1,
+    paddingHorizontal: Spacing.SCALE_12,
+    marginTop: Spacing.SCALE_8,
+  },
+  heading: {
+    color: Colors.SECONDARY,
+    fontWeight: "bold",
+    marginBottom: Spacing.SCALE_8,
   },
 });

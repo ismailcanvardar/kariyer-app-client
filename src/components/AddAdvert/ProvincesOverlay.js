@@ -39,7 +39,9 @@ function ProvincesOverlay({
                   _id: item._id,
                 });
                 setDistrict({});
-                setNeighborhood({});
+                if (setNeighborhood !== undefined) {
+                  setNeighborhood({});
+                }
                 setProvinceOverlayVisible(false);
               }}
             >

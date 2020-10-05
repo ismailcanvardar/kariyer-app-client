@@ -13,12 +13,16 @@ import {
   Input,
   Divider,
   Button,
+  CheckBox,
 } from "react-native-elements";
 import { Colors, Spacing, Typography, Mixins } from "../../styles/index";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { registerEmployee } from "../../api/employees";
 import { registerEmployer } from "../../api/employers";
 import { sendVerificationEmail } from "../../api/emails";
+import ProvincesOverlay from "../../components/AddAdvert/ProvincesOverlay";
+import DistrictsOverlay from "../../components/AddAdvert/DistrictsOverlay";
+import axios from "axios";
 
 const buttons = ["İşveren", "Çalışan"];
 
@@ -36,59 +40,89 @@ function RegisterScreen({ navigation }) {
   const [verificationCode, setVerificationCode] = useState(null);
   const [enteredVerificationCode, setEnteredVerificationCode] = useState("");
   const [verificationCodeMatched, setVerificationCodeMatched] = useState(null);
+  const [campaignAllowance, setCampaignAllowance] = useState(false);
+  const [kvkkAgreement, setKvkkAgreement] = useState(false);
+  const [userAgreement, setUserAgreement] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [province, setProvince] = useState({});
+  const [provinces, setProvinces] = useState([]);
+  const [district, setDistrict] = useState({});
+  const [districts, setDistricts] = useState([]);
+  const [provinceOverlayVisible, setProvinceOverlayVisible] = useState(false);
+  const [districtOverlayVisible, setDistrictOverlayVisible] = useState(false);
+  const [checkboxError, setCheckboxError] = useState(false);
 
   const updateSelectedIndex = (index) => {
     setSelectedIndex(index);
   };
 
   const register = async () => {
-    if (password === passwordRepeat) {
-      setPasswordsMatched(true);
-      if (selectedIndex === 0) {
-        registerEmployer(
-          { name, surname, email, phone, address, password },
-          (data) => {
-            setIsRegistered(true);
-            sendVerificationEmail(
-              email,
-              (data) => {
-                setVerificationCode(data.data.verificationCode);
-              },
-              (err) => console.log(err.response.data)
-            );
-          },
-          (err) => {
-            console.log(err.response.data);
-            if (err.response.data.detail === "Email already in use.") {
-              setEmailError(true);
-            }
-          }
-        );
-      } else if (selectedIndex === 1) {
-        registerEmployee(
-          { name, surname, email, phone, address, password },
-          (data) => {
-            setIsRegistered(true);
-            sendVerificationEmail(
-              email,
-              (data) => {
-                setVerificationCode(data.data.verificationCode);
-                console.log(data.data.verificationCode);
-              },
-              (err) => console.log(err.response.data)
-            );
-          },
-          (err) => {
-            console.log(err.response.data);
-            if (err.response.data.detail === "Email already in use.") {
-              setEmailError(true);
-            }
-          }
-        );
-      }
+    if (kvkkAgreement === false && userAgreement === false) {
+      setCheckboxError(true);
+      alert(
+        "Kayıt olmak için KVKK onayı ve Kullanıcı Sözleşmesi onayı gerekmektedir."
+      );
     } else {
-      setPasswordsMatched(false);
+      setCheckboxError(false);
+      if (password === passwordRepeat) {
+        setPasswordsMatched(true);
+        if (selectedIndex === 0) {
+          registerEmployer(
+            {
+              name,
+              surname,
+              email,
+              phone,
+              address,
+              password,
+              province: province.name,
+              district: district.name,
+              userAgreement,
+              kvkkAgreement,
+              campaignAllowance,
+            },
+            (data) => {
+              setIsRegistered(true);
+              sendVerificationEmail(
+                email,
+                (data) => {
+                  setVerificationCode(data.data.verificationCode);
+                },
+                (err) => console.log(err.response.data)
+              );
+            },
+            (err) => {
+              console.log(err.response.data);
+              if (err.response.data.detail === "Email already in use.") {
+                setEmailError(true);
+              }
+            }
+          );
+        } else if (selectedIndex === 1) {
+          registerEmployee(
+            { name, surname, email, phone, address, password },
+            (data) => {
+              setIsRegistered(true);
+              sendVerificationEmail(
+                email,
+                (data) => {
+                  setVerificationCode(data.data.verificationCode);
+                  console.log(data.data.verificationCode);
+                },
+                (err) => console.log(err.response.data)
+              );
+            },
+            (err) => {
+              console.log(err.response.data);
+              if (err.response.data.detail === "Email already in use.") {
+                setEmailError(true);
+              }
+            }
+          );
+        }
+      } else {
+        setPasswordsMatched(false);
+      }
     }
   };
 
@@ -109,6 +143,38 @@ function RegisterScreen({ navigation }) {
     } else {
       setVerificationCodeMatched(false);
     }
+  };
+
+  useEffect(() => {
+    getProvinces();
+  }, []);
+
+  useEffect(() => {
+    if (province.name !== null) {
+      getDistricts();
+    }
+  }, [province]);
+
+  const getProvinces = () => {
+    axios
+      .get("https://il-ilce-rest-api.herokuapp.com/v1/cities")
+      .then((data) => {
+        // console.log(data.data);
+        setProvinces(data.data.data);
+      })
+      .catch((err) => console.log("Province Error"));
+  };
+
+  const getDistricts = () => {
+    axios
+      .get(
+        `https://il-ilce-rest-api.herokuapp.com/v1/cities/${province._id}/towns`
+      )
+      .then((data) => {
+        // console.log(data.data);
+        setDistricts(data.data.data);
+      })
+      .catch((err) => console.log("District Error"));
   };
 
   useEffect(() => {
@@ -185,6 +251,39 @@ function RegisterScreen({ navigation }) {
                   onChangeText={(text) => setAddress(text)}
                   autoCapitalize="none"
                 />
+                <View style={styles.overlayInputHolder}>
+                  <Text style={{ fontSize: 18, marginTop: 8 }}>
+                    {!province.name ? "İl Seçiniz" : province.name}
+                  </Text>
+                  <Button
+                    title="Seç"
+                    onPress={() => setProvinceOverlayVisible(true)}
+                  />
+                </View>
+                <Divider />
+                <View style={styles.overlayInputHolder}>
+                  <Text style={{ fontSize: 18, marginTop: 8 }}>
+                    {!district.name ? "İlçe Seçiniz" : district.name}
+                  </Text>
+                  <Button
+                    disabled={!province.name && true}
+                    title="Seç"
+                    onPress={() => setDistrictOverlayVisible(true)}
+                  />
+                </View>
+                <ProvincesOverlay
+                  provinceOverlayVisible={provinceOverlayVisible}
+                  provinces={provinces}
+                  setProvinceOverlayVisible={setProvinceOverlayVisible}
+                  setProvince={setProvince}
+                  setDistrict={setDistrict}
+                />
+                <DistrictsOverlay
+                  districtOverlayVisible={districtOverlayVisible}
+                  districts={districts}
+                  setDistrictOverlayVisible={setDistrictOverlayVisible}
+                  setDistrict={setDistrict}
+                />
                 <Input
                   value={password}
                   placeholder="Şifre"
@@ -204,6 +303,23 @@ function RegisterScreen({ navigation }) {
                   autoCapitalize="none"
                   textContentType="oneTimeCode"
                 />
+                <View style={styles.checkboxContainer}>
+                  <CheckBox
+                    checked={kvkkAgreement}
+                    onIconPress={() => setKvkkAgreement(!kvkkAgreement)}
+                    title="KVKK doğrultusunda bilgilerimin saklanmasına onay veriyorum."
+                  />
+                  <CheckBox
+                    checked={userAgreement}
+                    onIconPress={() => setUserAgreement(!userAgreement)}
+                    title="Kullanıcı sözleşmesini kabul ediyorum."
+                  />
+                  <CheckBox
+                    checked={campaignAllowance}
+                    onIconPress={() => setCampaignAllowance(!campaignAllowance)}
+                    title="Kampanyalardan haberdar olmak istiyorum."
+                  />
+                </View>
               </View>
             </View>
           </>
@@ -241,6 +357,7 @@ function RegisterScreen({ navigation }) {
               }}
               containerStyle={{
                 paddingBottom: 2,
+                marginBottom: 32,
               }}
               titleStyle={{
                 color: Colors.PRIMARY,
@@ -333,5 +450,14 @@ const styles = StyleSheet.create({
   },
   verificationHeading: {
     color: Colors.SECONDARY,
+  },
+  overlayInputHolder: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    marginVertical: 5,
+  },
+  checkboxContainer: {
+    marginBottom: 12,
   },
 });

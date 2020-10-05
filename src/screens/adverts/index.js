@@ -23,7 +23,7 @@ function AdvertsScreen({ navigation }) {
     getMyAdverts(
       userToken,
       (data) => {
-        // console.log(data.data);
+        console.log(data.data);
         setRefreshing(false);
         setMyAdverts(data.data);
       },
@@ -62,36 +62,56 @@ function AdvertsScreen({ navigation }) {
           onPress={() => navigation.navigate("AddAdvert")}
         ></Button>
       </View>
-      {refreshing ? <ActivityIndicator /> : null}
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            //refresh control used for the Pull to Refresh
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
-        data={myAdverts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <ListItem
-            key={item.advertId}
-            onPress={() => navigation.navigate("AdvertPreview", { ...item })}
-            bottomDivider
-          >
-            <ListItem.Content style={{ paddingHorizontal: 12 }}>
-              <ListItem.Title
-                style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+      {myAdverts !== null && myAdverts.length > 0 ? (
+        refreshing ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                //refresh control used for the Pull to Refresh
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            }
+            data={myAdverts}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
+              <ListItem
+                key={item.advertId}
+                onPress={() =>
+                  navigation.navigate("AdvertPreview", { ...item })
+                }
+                bottomDivider
               >
-                {item.title} - {timeDifference(item.createdAt)}
-              </ListItem.Title>
-              <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
-                {item.description}
-              </ListItem.Subtitle>
-            </ListItem.Content>
-          </ListItem>
-        )}
-      />
+                <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                  <ListItem.Title
+                    style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                  >
+                    {item.advert.title} -{" "}
+                    {timeDifference(item.advert.createdAt)}
+                  </ListItem.Title>
+                  <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                    {item.advert.description}
+                  </ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            )}
+          />
+        )
+      ) : (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 24,
+          }}
+        >
+          <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
+            İlan bulunmamaktadır.
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

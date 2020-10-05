@@ -7,14 +7,23 @@ import { applyToAdvert, isApplied } from "../../api/applications";
 
 function AdvertPreviewScreen({ route, navigation }) {
   const [isAppliedTo, setIsAppliedTo] = useState(null);
+  const [advert, setAdvert] = useState({});
+  const [employer, setEmployer] = useState({});
 
   useEffect(() => {
-    checkIsApplied();
+    if (userRole === "employee") {
+      checkIsApplied();
+    }
   }, []);
+
+  useEffect(() => {
+    setAdvert(route.params.advert);
+    setEmployer(route.params.employer);
+  }, [route]);
 
   const checkIsApplied = () => {
     isApplied(
-      route.params.advertId,
+      route.params.advert.advertId,
       userToken,
       (data) => {
         console.log(data.data);
@@ -33,33 +42,29 @@ function AdvertPreviewScreen({ route, navigation }) {
           h1
           style={{ color: Colors.PRIMARY, fontWeight: "bold", paddingTop: 5 }}
         >
-          {route.params.title}
+          {advert.title}
         </Text>
         <Text
           style={{ color: Colors.PRIMARY, fontWeight: "bold", paddingTop: 5 }}
         >
-          {route.params.dailySalary} ₺ / gün -{" "}
-          {route.params.totalApplicantCount} Toplam Katılım
+          {advert.dailySalary} ₺ / gün - Toplam Katılım:{" "}
+          {advert.totalApplicantCount}
         </Text>
       </View>
       <View style={styles.bottomer}>
+        <Text style={styles.infoTextStyle}>Açıklama: {advert.description}</Text>
+        <Text style={styles.infoTextStyle}>İl: {advert.province}</Text>
+        <Text style={styles.infoTextStyle}>İlçe: {advert.district}</Text>
+        <Text style={styles.infoTextStyle}>Mahalle: {advert.neighborhood}</Text>
         <Text style={styles.infoTextStyle}>
-          Açıklama: {route.params.description}
-        </Text>
-        <Text style={styles.infoTextStyle}>İl: {route.params.province}</Text>
-        <Text style={styles.infoTextStyle}>İlçe: {route.params.district}</Text>
-        <Text style={styles.infoTextStyle}>
-          Mahalle: {route.params.neighborhood}
-        </Text>
-        <Text style={styles.infoTextStyle}>
-          Alınacak eleman sayısı: {route.params.neededEmployee}
+          Alınacak eleman sayısı: {advert.neededEmployee}
         </Text>
         <Divider style={{ marginVertical: 12 }} />
         {userRole === "employee" && (
           <Button
             onPress={() =>
               applyToAdvert(
-                route.params.advertId,
+                advert.advertId,
                 userToken,
                 (data) => {
                   console.log(data.data);
@@ -87,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.BACKGROUND,
   },
   topper: {
-    flex: 1,
+    flex: 2,
     backgroundColor: Colors.INFO,
     alignItems: "center",
     justifyContent: "center",

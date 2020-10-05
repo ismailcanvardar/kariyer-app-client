@@ -26,10 +26,7 @@ export const createAdvert = (data, token, callback, errorcallback) => {
 
 export const searchAdvert = (data, token, callback, errorcallback) => {
   axios
-    .get(
-      `${API_ENDPOINT}/adverts/search/${data.province}/${data.district}/${data.neighborhood}`,
-      headerSetter(token)
-    )
+    .post(`${API_ENDPOINT}/adverts/search`, data, headerSetter(token))
     .then((res) => {
       callback !== null && callback(res);
     })

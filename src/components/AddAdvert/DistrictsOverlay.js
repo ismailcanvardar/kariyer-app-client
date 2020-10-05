@@ -37,7 +37,9 @@ function DistrictsOverlay({
                   name: item.name,
                   _id: item._id,
                 });
-                setNeighborhood({});
+                if (setNeighborhood !== undefined) {
+                  setNeighborhood({});
+                }
                 setDistrictOverlayVisible(false);
               }}
             >
