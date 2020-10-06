@@ -1,18 +1,138 @@
-import React from "react";
-import { View, StyleSheet, SafeAreaView } from "react-native";
-import { SearchBar, Text, Divider } from "react-native-elements";
+import React, { useState, useEffect, useContext } from "react";
+import {
+  View,
+  StyleSheet,
+  SafeAreaView,
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  TouchableOpacity,
+} from "react-native";
+import {
+  SearchBar,
+  Divider,
+  Text,
+  ListItem,
+  Button,
+  ButtonGroup,
+} from "react-native-elements";
 import Constants from "expo-constants";
 import { Colors, Spacing, Typography, Mixins } from "../../styles/index";
+import { AuthContext } from "../../contexts/AuthProvider";
+import { searchAdvert } from "../../api/adverts";
+import { searchEmployees } from "../../api/employees";
+import { searchEmployers } from "../../api/employers";
+import { timeDifference, getDate } from "../../helpers/time-manipulations";
 
-const HomeScreen = () => {
+const buttons = ["İlan", "İşveren", "Çalışan"];
+
+const HomeScreen = ({ navigation }) => {
+  const { userToken, userRole, userProvince, userDistrict } = useContext(
+    AuthContext
+  );
+  const [advertsNearMe, setAdvertsNearMe] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchedAdvertsLoading, setSearchedAdvertsLoading] = useState(false);
+  const [searchedEmployersLoading, setSearchedEmployersLoading] = useState(
+    false
+  );
+  const [searchedEmployers, setSearchedEmployers] = useState(null);
+  const [searchedEmployeesLoading, setSearchedEmployeesLoading] = useState(
+    false
+  );
+  const [searchedEmployees, setSearchedEmployees] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchedAdverts, setSearchedAdverts] = useState(null);
+  const [selectedSearchType, setSelectedSearchType] = useState(0);
+
+  useEffect(() => {
+    getAdvertsNearMe();
+  }, []);
+
+  const onRefresh = () => {
+    getAdvertsNearMe();
+  };
+
+  const getAdvertsNearMe = () => {
+    searchAdvert(
+      { province: userProvince, district: userDistrict },
+      userToken,
+      (data) => {
+        console.log(data.data);
+        setAdvertsNearMe(data.data);
+        setIsLoading(false);
+      },
+      (err) => {
+        console.log(err.response);
+      }
+    );
+  };
+
+  const searchAdvertFromSearchBar = () => {
+    setSearchedAdvertsLoading(true);
+    searchAdvert(
+      { searchCriteria: searchValue },
+      userToken,
+      (data) => {
+        console.log(data.data);
+        setSearchedAdverts(data.data);
+      },
+      (err) => console.log(err)
+    );
+    setSearchedAdvertsLoading(false);
+  };
+
+  const searchEmployeeFromSearchBar = () => {
+    setSearchedEmployeesLoading(true);
+    searchEmployees(
+      { searchCriteria: searchValue, offset: 0, limit: 5 },
+      (data) => {
+        console.log(data.data);
+        setSearchedEmployees(data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    setSearchedEmployeesLoading(false);
+  };
+
+  const searchEmployerFromSearchBar = () => {
+    setSearchedEmployersLoading(true);
+    searchEmployers(
+      { searchCriteria: searchValue, offset: 0, limit: 5 },
+      (data) => {
+        console.log(data.data);
+        setSearchedEmployers(data.data);
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+    setSearchedEmployersLoading(true);
+  };
+
+  useEffect(() => {
+    if (searchValue.length > 0) {
+      if (selectedSearchType === 0) {
+        searchAdvertFromSearchBar();
+      } else if (selectedSearchType === 1) {
+        searchEmployerFromSearchBar();
+      } else if (selectedSearchType === 2) {
+        searchEmployeeFromSearchBar();
+      }
+    }
+  }, [searchValue, selectedSearchType]);
+
   return (
     <View style={styles.container}>
       <SearchBar
         round
         lightTheme
         placeholder="İlan, işveren veya çalışan ara..."
-        onChangeText={(text) => console.log(text)}
-        value={"hi"}
+        onChangeText={(text) => setSearchValue(text)}
+        value={searchValue}
         containerStyle={{
           backgroundColor: Colors.BACKGROUND,
         }}
@@ -20,12 +140,147 @@ const HomeScreen = () => {
           backgroundColor: Colors.WHITE,
         }}
       />
-      <View style={styles.searchBarBottom}>
-        <Text h4 style={styles.heading}>
-          Yakınımdaki İlanlar
-        </Text>
-        <Divider />
-      </View>
+      {searchValue.length === 0 ? (
+        <View style={styles.searchBarBottom}>
+          <Text h4 style={styles.heading}>
+            Yakınımdaki İlanlar
+          </Text>
+          <Divider />
+          {isLoading === false && advertsNearMe === null && (
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                paddingTop: 24,
+              }}
+            >
+              <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
+                İlan bulunmamaktadır.
+              </Text>
+            </View>
+          )}
+          {isLoading && (
+            <View style={{ paddingTop: Spacing.SCALE_24 }}>
+              <ActivityIndicator />
+            </View>
+          )}
+          {refreshing ? (
+            <View style={{ paddingTop: Spacing.SCALE_24 }}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <View style={{ flex: 1, paddingTop: Spacing.SCALE_8 }}>
+              <FlatList
+                refreshControl={
+                  <RefreshControl
+                    //refresh control used for the Pull to Refresh
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+                data={advertsNearMe}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <ListItem
+                    containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+                    key={item.advertId}
+                    onPress={() =>
+                      navigation.navigate("AdvertPreviewForHome", { ...item })
+                    }
+                    bottomDivider
+                  >
+                    <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                      <ListItem.Title
+                        style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                      >
+                        {item.advert.title} -{" "}
+                        {timeDifference(item.advert.createdAt)}
+                      </ListItem.Title>
+                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                        {item.advert.description}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                )}
+              />
+            </View>
+          )}
+        </View>
+      ) : selectedSearchType === 0 ? (
+        <>
+          <ButtonGroup
+            onPress={(index) => setSelectedSearchType(index)}
+            selectedIndex={selectedSearchType}
+            buttons={buttons}
+            containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
+          />
+          <View style={styles.searchBarBottom}>
+            {isLoading === false && advertsNearMe === null && (
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: 24,
+                }}
+              >
+                <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
+                  İlan bulunmamaktadır.
+                </Text>
+              </View>
+            )}
+            {searchedAdvertsLoading && (
+              <View style={{ paddingTop: Spacing.SCALE_24 }}>
+                <ActivityIndicator />
+              </View>
+            )}
+            <View style={{ flex: 1, paddingTop: Spacing.SCALE_8 }}>
+              <FlatList
+                data={searchedAdverts}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <ListItem
+                    containerStyle={{
+                      borderRadius: Spacing.SCALE_32,
+                      marginBottom: Spacing.SCALE_8,
+                    }}
+                    key={item.advertId}
+                    onPress={() =>
+                      navigation.navigate("AdvertPreviewForHome", { ...item })
+                    }
+                    bottomDivider
+                  >
+                    <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                      <ListItem.Title
+                        style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                      >
+                        {item.advert.title} -{" "}
+                        {timeDifference(item.advert.createdAt)}
+                      </ListItem.Title>
+                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                        {item.advert.description}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                )}
+              />
+            </View>
+          </View>
+        </>
+      ) : selectedSearchType === 1 ? (
+        <ButtonGroup
+          onPress={(index) => setSelectedSearchType(index)}
+          selectedIndex={selectedSearchType}
+          buttons={buttons}
+          containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
+        />
+      ) : selectedSearchType === 2 ? (
+        <ButtonGroup
+          onPress={(index) => setSelectedSearchType(index)}
+          selectedIndex={selectedSearchType}
+          buttons={buttons}
+          containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
+        />
+      ) : null}
     </View>
   );
 };
@@ -39,7 +294,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.BACKGROUND,
   },
   searchBarBottom: {
-    // flex: 1,
+    flex: 1,
     paddingHorizontal: Spacing.SCALE_12,
     marginTop: Spacing.SCALE_8,
   },

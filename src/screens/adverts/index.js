@@ -18,6 +18,7 @@ function AdvertsScreen({ navigation }) {
   const { userToken } = useContext(AuthContext);
   const [myAdverts, setMyAdverts] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getEmployersAdverts = () => {
     getMyAdverts(
@@ -26,6 +27,7 @@ function AdvertsScreen({ navigation }) {
         console.log(data.data);
         setRefreshing(false);
         setMyAdverts(data.data);
+        setIsLoading(false);
       },
       (e) => console.log(e.response.data.title)
     );
@@ -36,7 +38,6 @@ function AdvertsScreen({ navigation }) {
   }, []);
 
   const onRefresh = () => {
-    setMyAdverts([]);
     getEmployersAdverts();
   };
 
@@ -62,10 +63,36 @@ function AdvertsScreen({ navigation }) {
           onPress={() => navigation.navigate("AddAdvert")}
         ></Button>
       </View>
-      {myAdverts !== null && myAdverts.length > 0 ? (
-        refreshing ? (
+      {isLoading === false && myAdverts === null && (
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 24,
+          }}
+        >
+          <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
+            İlan bulunmamaktadır.
+          </Text>
+        </View>
+      )}
+      {isLoading && (
+        <View style={{ paddingTop: Spacing.SCALE_24 }}>
           <ActivityIndicator />
-        ) : (
+        </View>
+      )}
+      {refreshing ? (
+        <View style={{ paddingTop: Spacing.SCALE_24 }}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            paddingTop: Spacing.SCALE_8,
+            paddingHorizontal: Spacing.SCALE_8,
+          }}
+        >
           <FlatList
             refreshControl={
               <RefreshControl
@@ -82,7 +109,8 @@ function AdvertsScreen({ navigation }) {
                 onPress={() =>
                   navigation.navigate("AdvertPreview", { ...item })
                 }
-                bottomDivider
+                // bottomDivider
+                containerStyle={{ borderRadius: Spacing.SCALE_32 }}
               >
                 <ListItem.Content style={{ paddingHorizontal: 12 }}>
                   <ListItem.Title
@@ -98,18 +126,6 @@ function AdvertsScreen({ navigation }) {
               </ListItem>
             )}
           />
-        )
-      ) : (
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: 24,
-          }}
-        >
-          <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
-            İlan bulunmamaktadır.
-          </Text>
         </View>
       )}
     </View>

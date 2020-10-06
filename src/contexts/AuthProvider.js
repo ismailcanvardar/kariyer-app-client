@@ -7,6 +7,8 @@ const AuthProvider = ({ children }) => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [userProvince, setUserProvince] = useState(null);
+  const [userDistrict, setUserDistrict] = useState(null);
 
   const getUser = async () => {
     const user = await AsyncStorage.getItem("user");
@@ -18,15 +20,25 @@ const AuthProvider = ({ children }) => {
       const savedUser = JSON.parse(user);
       setUserToken(savedUser.token);
       setUserRole(savedUser.role);
+      setUserProvince(savedUser.province);
+      setUserDistrict(savedUser.district);
     }
   };
 
-  const saveUser = async (token, role) => {
-    const user = { token, role };
+  const saveUser = async (data, role) => {
+    console.log(data);
+    const user = {
+      token: data.token,
+      role,
+      province: data.province,
+      district: data.district,
+    };
     await AsyncStorage.setItem("user", JSON.stringify(user));
     setIsUserLoggedIn(true);
-    setUserToken(token);
+    setUserToken(data.token);
     setUserRole(role);
+    setUserProvince(data.province);
+    setUserDistrict(data.district);
   };
 
   const logoutUser = async () => {
@@ -40,7 +52,15 @@ const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isUserLoggedIn, userToken, userRole, saveUser, logoutUser }}
+      value={{
+        isUserLoggedIn,
+        userToken,
+        userRole,
+        userProvince,
+        userDistrict,
+        saveUser,
+        logoutUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

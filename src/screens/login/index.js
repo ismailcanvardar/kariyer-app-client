@@ -45,7 +45,9 @@ function LoginScreen({ navigation }) {
       loginEmployer(
         { email, password },
         (data) => {
-          saveUser(data.data.token, "employer");
+          const userData = data.data;
+          console.log(data.data);
+          saveUser(userData, "employer");
           // console.log(data.data.token);
         },
         (err) => {
@@ -59,7 +61,8 @@ function LoginScreen({ navigation }) {
       loginEmployee(
         { email, password },
         (data) => {
-          saveUser(data.data.token, "employee");
+          const userData = data.data;
+          saveUser(userData, "employee");
           console.log(data.data.token);
         },
         (err) => {

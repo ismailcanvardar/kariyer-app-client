@@ -25,6 +25,15 @@ const HomeStack = () => (
       options={{ headerShown: false }}
       component={HomeScreen}
     />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "İlan",
+      }}
+      name="AdvertPreviewForHome"
+      component={AdvertPreviewScreen}
+    />
   </Stack.Navigator>
 );
 
