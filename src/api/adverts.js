@@ -56,3 +56,41 @@ export const getMyAdverts = (token, callback, errorcallback) => {
       errorcallback !== null && errorcallback(err);
     });
 };
+
+export const getAdvertsOfDefinedEmployer = (
+  employerId,
+  token,
+  callback,
+  errorcallback
+) => {
+  axios
+    .get(
+      `${API_ENDPOINT}/adverts/getAdvertsOfDefinedEmployer/${employerId}`,
+      headerSetter(token)
+    )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
+export const getAdvertsOfDefinedEmployee = (
+  employeeId,
+  token,
+  callback,
+  errorcallback
+) => {
+  axios
+    .get(
+      `${API_ENDPOINT}/adverts/getAdvertsOfDefinedEmployee/${employeeId}`,
+      headerSetter(token)
+    )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};

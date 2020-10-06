@@ -6,8 +6,9 @@ import { AuthContext } from "../../contexts/AuthProvider";
 import { getMyEmployeeProfile } from "../../api/employees";
 import { getMyEmployerProfile } from "../../api/employers";
 import { Avatar, Text, Divider, ListItem, Badge } from "react-native-elements";
+import { Rating } from "react-native-rating-element";
 
-function ProfileScreen() {
+function ProfileScreen({ route }) {
   const [user, setUser] = useState(null);
   const { logoutUser, userToken, userRole } = useContext(AuthContext);
 
@@ -79,6 +80,18 @@ function ProfileScreen() {
             <Text h4 style={{ color: Colors.SECONDARY }}>
               {user.name} {user.surname}
             </Text>
+            {userRole === "employee" && (
+              <Rating
+                rated={user.totalRating}
+                totalCount={5}
+                ratingColor="#f1c644"
+                ratingBackgroundColor="#d4d4d4"
+                size={24}
+                readonly
+                icon="ios-star"
+                direction="row"
+              />
+            )}
           </View>
           {/* <Divider style={styles.dividerStyle} /> */}
           <View style={styles.listHolder}>

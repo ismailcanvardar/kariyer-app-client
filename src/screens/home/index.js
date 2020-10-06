@@ -15,6 +15,7 @@ import {
   ListItem,
   Button,
   ButtonGroup,
+  Avatar,
 } from "react-native-elements";
 import Constants from "expo-constants";
 import { Colors, Spacing, Typography, Mixins } from "../../styles/index";
@@ -47,8 +48,10 @@ const HomeScreen = ({ navigation }) => {
   const [selectedSearchType, setSelectedSearchType] = useState(0);
 
   useEffect(() => {
-    getAdvertsNearMe();
-  }, []);
+    if ((userToken, userProvince, userDistrict)) {
+      getAdvertsNearMe();
+    }
+  }, [userToken, userProvince, userDistrict]);
 
   const onRefresh = () => {
     getAdvertsNearMe();
@@ -59,7 +62,7 @@ const HomeScreen = ({ navigation }) => {
       { province: userProvince, district: userDistrict },
       userToken,
       (data) => {
-        console.log(data.data);
+        // console.log(data.data);
         setAdvertsNearMe(data.data);
         setIsLoading(false);
       },
@@ -75,7 +78,7 @@ const HomeScreen = ({ navigation }) => {
       { searchCriteria: searchValue },
       userToken,
       (data) => {
-        console.log(data.data);
+        // console.log(data.data);
         setSearchedAdverts(data.data);
       },
       (err) => console.log(err)
@@ -88,7 +91,7 @@ const HomeScreen = ({ navigation }) => {
     searchEmployees(
       { searchCriteria: searchValue, offset: 0, limit: 5 },
       (data) => {
-        console.log(data.data);
+        // console.log(data.data);
         setSearchedEmployees(data.data);
       },
       (err) => {
@@ -103,14 +106,14 @@ const HomeScreen = ({ navigation }) => {
     searchEmployers(
       { searchCriteria: searchValue, offset: 0, limit: 5 },
       (data) => {
-        console.log(data.data);
+        // console.log(data.data);
         setSearchedEmployers(data.data);
       },
       (err) => {
         console.log(err);
       }
     );
-    setSearchedEmployersLoading(true);
+    setSearchedEmployersLoading(false);
   };
 
   useEffect(() => {
@@ -189,6 +192,16 @@ const HomeScreen = ({ navigation }) => {
                     }
                     bottomDivider
                   >
+                    <Avatar
+                      size="medium"
+                      title={`${item.employer.name[0]}${item.employer.surname[0]}`}
+                      overlayContainerStyle={{
+                        backgroundColor: Colors.SECONDARY,
+                      }}
+                      rounded
+                      onPress={() => console.log("Works!")}
+                      activeOpacity={0.7}
+                    />
                     <ListItem.Content style={{ paddingHorizontal: 12 }}>
                       <ListItem.Title
                         style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
@@ -215,25 +228,39 @@ const HomeScreen = ({ navigation }) => {
             containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
           />
           <View style={styles.searchBarBottom}>
-            {isLoading === false && advertsNearMe === null && (
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  paddingTop: 24,
-                }}
-              >
-                <Text style={{ fontSize: 18, color: Colors.SECONDARY }}>
-                  İlan bulunmamaktadır.
-                </Text>
-              </View>
-            )}
             {searchedAdvertsLoading && (
               <View style={{ paddingTop: Spacing.SCALE_24 }}>
                 <ActivityIndicator />
               </View>
             )}
-            <View style={{ flex: 1, paddingTop: Spacing.SCALE_8 }}>
+            {searchedAdverts &&
+              searchedAdverts.length === 0 &&
+              !searchedAdvertsLoading && (
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <Text style={{ fontWeight: "bold", color: Colors.SECONDARY }}>
+                    Sonuç bulunamadı.
+                  </Text>
+                </View>
+              )}
+            <View style={{ flex: 1 }}>
+              {searchedAdverts && searchedAdverts.length !== 0 && (
+                <>
+                  <Text
+                    h4
+                    style={{
+                      paddingBottom: 8,
+                      paddingLeft: 8,
+                      fontWeight: "600",
+                      color: Colors.SECONDARY,
+                    }}
+                  >
+                    İlan Sonuçları
+                  </Text>
+                  <Divider style={{ marginBottom: 12 }} />
+                </>
+              )}
               <FlatList
                 data={searchedAdverts}
                 keyExtractor={(item, index) => index.toString()}
@@ -249,6 +276,16 @@ const HomeScreen = ({ navigation }) => {
                     }
                     bottomDivider
                   >
+                    <Avatar
+                      size="medium"
+                      title={`${item.employer.name[0]}${item.employer.surname[0]}`}
+                      overlayContainerStyle={{
+                        backgroundColor: Colors.SECONDARY,
+                      }}
+                      rounded
+                      onPress={() => console.log("Works!")}
+                      activeOpacity={0.7}
+                    />
                     <ListItem.Content style={{ paddingHorizontal: 12 }}>
                       <ListItem.Title
                         style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
@@ -267,19 +304,179 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </>
       ) : selectedSearchType === 1 ? (
-        <ButtonGroup
-          onPress={(index) => setSelectedSearchType(index)}
-          selectedIndex={selectedSearchType}
-          buttons={buttons}
-          containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
-        />
+        <>
+          <ButtonGroup
+            onPress={(index) => setSelectedSearchType(index)}
+            selectedIndex={selectedSearchType}
+            buttons={buttons}
+            containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
+          />
+          <View style={styles.searchBarBottom}>
+            {searchedEmployersLoading && (
+              <View style={{ paddingTop: Spacing.SCALE_24 }}>
+                <ActivityIndicator />
+              </View>
+            )}
+            {searchedEmployers &&
+              searchedEmployers.length === 0 &&
+              !searchedEmployersLoading && (
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <Text style={{ fontWeight: "bold", color: Colors.SECONDARY }}>
+                    Sonuç bulunamadı.
+                  </Text>
+                </View>
+              )}
+            <View style={{ flex: 1 }}>
+              {searchedEmployers && searchedEmployers.length !== 0 && (
+                <>
+                  <Text
+                    h4
+                    style={{
+                      paddingBottom: 8,
+                      paddingLeft: 8,
+                      fontWeight: "600",
+                      color: Colors.SECONDARY,
+                    }}
+                  >
+                    İşveren Sonuçları
+                  </Text>
+
+                  <Divider style={{ marginBottom: 12 }} />
+                </>
+              )}
+              <FlatList
+                data={searchedEmployers}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <ListItem
+                    containerStyle={{
+                      borderRadius: Spacing.SCALE_32,
+                      marginBottom: Spacing.SCALE_8,
+                    }}
+                    key={item.advertId}
+                    onPress={() =>
+                      navigation.navigate("SearchedProfilePreview", {
+                        ...item,
+                        userRole: "employer",
+                      })
+                    }
+                    bottomDivider
+                  >
+                    <Avatar
+                      size="medium"
+                      title={`${item.name[0]}${item.surname[0]}`}
+                      overlayContainerStyle={{
+                        backgroundColor: Colors.SECONDARY,
+                      }}
+                      rounded
+                      onPress={() => console.log("Works!")}
+                      activeOpacity={0.7}
+                    />
+                    <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                      <ListItem.Title
+                        style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                      >
+                        {`${item.name} ${item.surname}`}
+                      </ListItem.Title>
+                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                        {item.phone}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                )}
+              />
+            </View>
+          </View>
+        </>
       ) : selectedSearchType === 2 ? (
-        <ButtonGroup
-          onPress={(index) => setSelectedSearchType(index)}
-          selectedIndex={selectedSearchType}
-          buttons={buttons}
-          containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
-        />
+        <>
+          <ButtonGroup
+            onPress={(index) => setSelectedSearchType(index)}
+            selectedIndex={selectedSearchType}
+            buttons={buttons}
+            containerStyle={{ height: 25, borderRadius: Spacing.SCALE_8 }}
+          />
+          <View style={styles.searchBarBottom}>
+            {searchedEmployeesLoading && (
+              <View style={{ paddingTop: Spacing.SCALE_24 }}>
+                <ActivityIndicator />
+              </View>
+            )}
+            {searchedEmployees &&
+              searchedEmployees.length === 0 &&
+              !searchedEmployeesLoading && (
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
+                  <Text style={{ fontWeight: "bold", color: Colors.SECONDARY }}>
+                    Sonuç bulunamadı.
+                  </Text>
+                </View>
+              )}
+            <View style={{ flex: 1 }}>
+              {searchedEmployees && searchedEmployees.length !== 0 && (
+                <>
+                  <Text
+                    h4
+                    style={{
+                      paddingBottom: 8,
+                      paddingLeft: 8,
+                      fontWeight: "600",
+                      color: Colors.SECONDARY,
+                    }}
+                  >
+                    Çalışan Sonuçları
+                  </Text>
+
+                  <Divider style={{ marginBottom: 12 }} />
+                </>
+              )}
+              <FlatList
+                data={searchedEmployees}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={({ item, index }) => (
+                  <ListItem
+                    containerStyle={{
+                      borderRadius: Spacing.SCALE_32,
+                      marginBottom: Spacing.SCALE_8,
+                    }}
+                    key={item.advertId}
+                    onPress={() =>
+                      navigation.navigate("SearchedProfilePreview", {
+                        ...item,
+                        userRole: "employee",
+                      })
+                    }
+                    bottomDivider
+                  >
+                    <Avatar
+                      size="medium"
+                      title={`${item.name[0]}${item.surname[0]}`}
+                      overlayContainerStyle={{
+                        backgroundColor: Colors.SECONDARY,
+                      }}
+                      rounded
+                      onPress={() => console.log("Works!")}
+                      activeOpacity={0.7}
+                    />
+                    <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                      <ListItem.Title
+                        style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                      >
+                        {`${item.name} ${item.surname}`}
+                      </ListItem.Title>
+                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                        {item.totalRating}
+                      </ListItem.Subtitle>
+                    </ListItem.Content>
+                  </ListItem>
+                )}
+              />
+            </View>
+          </View>
+        </>
       ) : null}
     </View>
   );

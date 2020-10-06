@@ -100,7 +100,19 @@ function RegisterScreen({ navigation }) {
           );
         } else if (selectedIndex === 1) {
           registerEmployee(
-            { name, surname, email, phone, address, password },
+            {
+              name,
+              surname,
+              email,
+              phone,
+              address,
+              password,
+              province: province.name,
+              district: district.name,
+              userAgreement,
+              kvkkAgreement,
+              campaignAllowance,
+            },
             (data) => {
               setIsRegistered(true);
               sendVerificationEmail(
@@ -294,6 +306,7 @@ function RegisterScreen({ navigation }) {
                   errorMessage={
                     passwordsMatched === false ? "Şifreler eşleşmedi." : ""
                   }
+                  blurOnSubmit={false}
                 />
                 <Input
                   value={passwordRepeat}
@@ -302,6 +315,7 @@ function RegisterScreen({ navigation }) {
                   onChangeText={(text) => setPasswordRepeat(text)}
                   autoCapitalize="none"
                   textContentType="oneTimeCode"
+                  blurOnSubmit={false}
                 />
                 <View style={styles.checkboxContainer}>
                   <CheckBox

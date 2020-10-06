@@ -8,6 +8,7 @@ import ApplicationsScreen from "../screens/applications/index";
 import AdvertsScreen from "../screens/adverts/index";
 import AddAdvertScreen from "../screens/add-advert/index";
 import AdvertPreviewScreen from "../screens/advert-preview/index";
+import SearchedProfile from "../screens/searched-profile/index";
 import SearchedAdvert from "../screens/searched-advert/index";
 import { AuthContext } from "../contexts/AuthProvider";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -32,6 +33,24 @@ const HomeStack = () => (
         headerTitle: "İlan",
       }}
       name="AdvertPreviewForHome"
+      component={AdvertPreviewScreen}
+    />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "Profil",
+      }}
+      name="SearchedProfilePreview"
+      component={SearchedProfile}
+    />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "İlan",
+      }}
+      name="SearchedAdvertPreviewForHome"
       component={AdvertPreviewScreen}
     />
   </Stack.Navigator>

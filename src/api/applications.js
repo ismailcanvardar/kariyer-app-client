@@ -28,6 +28,25 @@ export const getMyApplication = (token, callback, errorcallback) => {
     });
 };
 
+export const getApplicationsOfDefinedEmployer = (
+  employeeId,
+  token,
+  callback,
+  errorcallback
+) => {
+  axios
+    .get(
+      `${API_ENDPOINT}/applications/getApplicationsOfDefinedEmployer/${employeeId}`,
+      headerSetter(token)
+    )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
 export const isApplied = (advertId, token, callback, errorcallback) => {
   axios
     .get(

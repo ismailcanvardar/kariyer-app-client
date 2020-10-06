@@ -57,35 +57,44 @@ function ApplicationsScreen({ navigation }) {
         </Text>
       </View>
       {refreshing ? <ActivityIndicator /> : null}
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            //refresh control used for the Pull to Refresh
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }
-        data={myApplications}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <ListItem
-            key={item.advertId}
-            onPress={() => navigation.navigate("AdvertPreview", { ...item })}
-            bottomDivider
-          >
-            <ListItem.Content style={{ paddingHorizontal: 12 }}>
-              <ListItem.Title
-                style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
-              >
-                {item.title} - {timeDifference(item.createdAt)}
-              </ListItem.Title>
-              <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
-                {item.description}
-              </ListItem.Subtitle>
-            </ListItem.Content>
-          </ListItem>
-        )}
-      />
+      <View
+        style={{
+          paddingTop: Spacing.SCALE_8,
+          paddingHorizontal: Spacing.SCALE_12,
+          flex: 1,
+        }}
+      >
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              //refresh control used for the Pull to Refresh
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+            />
+          }
+          data={myApplications}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => (
+            <ListItem
+              key={item.advertId}
+              onPress={() => navigation.navigate("AdvertPreview", { ...item })}
+              bottomDivider
+              containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+            >
+              <ListItem.Content style={{ paddingHorizontal: 12 }}>
+                <ListItem.Title
+                  style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
+                >
+                  {item.title} - {timeDifference(item.createdAt)}
+                </ListItem.Title>
+                <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
+                  {item.description}
+                </ListItem.Subtitle>
+              </ListItem.Content>
+            </ListItem>
+          )}
+        />
+      </View>
     </View>
   );
 }

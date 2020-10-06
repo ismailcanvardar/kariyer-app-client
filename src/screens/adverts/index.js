@@ -11,7 +11,7 @@ import Constants from "expo-constants";
 import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { getMyAdverts } from "../../api/adverts";
-import { Text, ListItem, Button } from "react-native-elements";
+import { Text, ListItem, Button, Avatar } from "react-native-elements";
 import { timeDifference, getDate } from "../../helpers/time-manipulations";
 
 function AdvertsScreen({ navigation }) {
@@ -112,6 +112,16 @@ function AdvertsScreen({ navigation }) {
                 // bottomDivider
                 containerStyle={{ borderRadius: Spacing.SCALE_32 }}
               >
+                <Avatar
+                  size="medium"
+                  title={`${item.employer.name[0]}${item.employer.surname[0]}`}
+                  overlayContainerStyle={{
+                    backgroundColor: Colors.SECONDARY,
+                  }}
+                  rounded
+                  onPress={() => console.log("Works!")}
+                  activeOpacity={0.7}
+                />
                 <ListItem.Content style={{ paddingHorizontal: 12 }}>
                   <ListItem.Title
                     style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
