@@ -23,7 +23,7 @@ function ApplicationsScreen({ navigation }) {
     getMyApplication(
       userToken,
       (data) => {
-        // console.log(data.data);
+        console.log(data.data);
         setRefreshing(false);
         setMyApplications(data.data);
       },
@@ -77,18 +77,25 @@ function ApplicationsScreen({ navigation }) {
           renderItem={({ item, index }) => (
             <ListItem
               key={item.advertId}
-              onPress={() => navigation.navigate("AdvertPreview", { ...item })}
+              onPress={() =>
+                navigation.navigate("AdvertPreview", {
+                  advert: { ...item.advert },
+                })
+              }
               bottomDivider
-              containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+              containerStyle={{
+                borderRadius: Spacing.SCALE_32,
+                marginBottom: 8,
+              }}
             >
               <ListItem.Content style={{ paddingHorizontal: 12 }}>
                 <ListItem.Title
                   style={{ color: Colors.SECONDARY, fontWeight: "bold" }}
                 >
-                  {item.title} - {timeDifference(item.createdAt)}
+                  {item.advert.title} - {timeDifference(item.advert.createdAt)}
                 </ListItem.Title>
                 <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
-                  {item.description}
+                  {item.advert.description}
                 </ListItem.Subtitle>
               </ListItem.Content>
             </ListItem>

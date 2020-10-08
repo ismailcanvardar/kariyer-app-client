@@ -5,6 +5,8 @@ export const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(null);
+  const [employerId, setEmployerId] = useState(null);
+  const [employeeId, setEmployeeId] = useState(null);
   const [userToken, setUserToken] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [userProvince, setUserProvince] = useState(null);
@@ -22,6 +24,8 @@ const AuthProvider = ({ children }) => {
       setUserRole(savedUser.role);
       setUserProvince(savedUser.province);
       setUserDistrict(savedUser.district);
+      setEmployeeId(savedUser.employeeId);
+      setEmployerId(savedUser.employerId);
     }
   };
 
@@ -32,6 +36,8 @@ const AuthProvider = ({ children }) => {
       role,
       province: data.province,
       district: data.district,
+      employeeId: data.employeeId,
+      employerId: data.employerId,
     };
     await AsyncStorage.setItem("user", JSON.stringify(user));
     setIsUserLoggedIn(true);
@@ -39,6 +45,8 @@ const AuthProvider = ({ children }) => {
     setUserRole(role);
     setUserProvince(data.province);
     setUserDistrict(data.district);
+    setEmployerId(data.employerId);
+    setEmployeeId(data.employeeId);
   };
 
   const logoutUser = async () => {
@@ -58,6 +66,8 @@ const AuthProvider = ({ children }) => {
         userRole,
         userProvince,
         userDistrict,
+        employerId,
+        employeeId,
         saveUser,
         logoutUser,
       }}

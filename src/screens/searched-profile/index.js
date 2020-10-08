@@ -219,7 +219,10 @@ function SearchedProfile({ route, navigation }) {
                       })
                     }
                     bottomDivider
-                    containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+                    containerStyle={{
+                      borderRadius: Spacing.SCALE_32,
+                      marginBottom: 8,
+                    }}
                   >
                     <ListItem.Content style={{ paddingHorizontal: 12 }}>
                       <ListItem.Title
@@ -277,7 +280,10 @@ function SearchedProfile({ route, navigation }) {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
                   <ListItem
-                    containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+                    containerStyle={{
+                      borderRadius: Spacing.SCALE_32,
+                      marginBottom: 8,
+                    }}
                     key={item.advertId}
                     onPress={() =>
                       navigation.navigate("SearchedAdvertPreviewForHome", {

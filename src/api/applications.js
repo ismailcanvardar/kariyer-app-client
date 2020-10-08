@@ -17,6 +17,25 @@ export const applyToAdvert = (advertId, token, callback, errorcallback) => {
     });
 };
 
+export const cancelApplication = (
+  applicationId,
+  token,
+  callback,
+  errorcallback
+) => {
+  axios
+    .delete(
+      `${API_ENDPOINT}/applications/apply/${applicationId}`,
+      headerSetter(token)
+    )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
 export const getMyApplication = (token, callback, errorcallback) => {
   axios
     .get(`${API_ENDPOINT}/applications/myApplications`, headerSetter(token))
@@ -51,6 +70,25 @@ export const isApplied = (advertId, token, callback, errorcallback) => {
   axios
     .get(
       `${API_ENDPOINT}/applications/isApplied/${advertId}`,
+      headerSetter(token)
+    )
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
+export const getApplicationsByAdvert = (
+  advertId,
+  token,
+  callback,
+  errorcallback
+) => {
+  axios
+    .get(
+      `${API_ENDPOINT}/applications/getApplicationsByAdvert/${advertId}`,
       headerSetter(token)
     )
     .then((res) => {

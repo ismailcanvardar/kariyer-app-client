@@ -81,6 +81,34 @@ const AdvertsStack = () => (
       name="AdvertPreview"
       component={AdvertPreviewScreen}
     />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "Profil",
+      }}
+      name="SearchedProfilePreview"
+      component={SearchedProfile}
+    />
+  </Stack.Navigator>
+);
+
+const ApplicationsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="Applications"
+      options={{ headerShown: false }}
+      component={ApplicationsScreen}
+    />
+    <Stack.Screen
+      options={{
+        headerStyle: { backgroundColor: Colors.PRIMARY },
+        headerTintColor: Colors.WHITE,
+        headerTitle: "İlan",
+      }}
+      name="AdvertPreview"
+      component={AdvertPreviewScreen}
+    />
   </Stack.Navigator>
 );
 
@@ -183,6 +211,14 @@ const TabNavigator = () => {
         name="Home"
         component={HomeStack}
       />
+      <Screen
+        name="Search"
+        options={{
+          tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "search"),
+          tabBarLabel: "Ara",
+        }}
+        component={SearchStack}
+      />
       {userRole === "employer" ? (
         <Screen
           name="Adverts"
@@ -199,17 +235,9 @@ const TabNavigator = () => {
             tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "file-text"),
             tabBarLabel: "Başvurularım",
           }}
-          component={ApplicationsScreen}
+          component={ApplicationsStack}
         />
       )}
-      <Screen
-        name="Search"
-        options={{
-          tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "search"),
-          tabBarLabel: "Ara",
-        }}
-        component={SearchStack}
-      />
       <Screen
         name="Profile"
         options={{
