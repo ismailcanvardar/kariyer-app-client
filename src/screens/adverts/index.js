@@ -110,7 +110,10 @@ function AdvertsScreen({ navigation }) {
                   navigation.navigate("AdvertPreview", { ...item })
                 }
                 // bottomDivider
-                containerStyle={{ borderRadius: Spacing.SCALE_32 }}
+                containerStyle={{
+                  borderRadius: Spacing.SCALE_32,
+                  marginBottom: 12,
+                }}
               >
                 <Avatar
                   size="medium"

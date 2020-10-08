@@ -1,9 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Constants from "expo-constants";
 import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import { AuthContext } from "../../contexts/AuthProvider";
-import { Button, Divider } from "react-native-elements";
+import { Button, Divider, Text } from "react-native-elements";
 import ProvincesOverlay from "../../components/AddAdvert/ProvincesOverlay";
 import DistrictsOverlay from "../../components/AddAdvert/DistrictsOverlay";
 import NeighborhoodsOverlay from "../../components/AddAdvert/NeighborhoodsOverlay";
@@ -99,6 +99,10 @@ function SearchScreen({ navigation }) {
       {foundAdverts.length === 0 ? (
         <>
           <View>
+            <Text h3 style={{ marginLeft: 8, marginBottom: 3 }}>
+              İlan Ara
+            </Text>
+            <Divider />
             <View style={styles.overlayInputHolder}>
               <Text style={{ fontSize: 18, marginTop: 8 }}>
                 {!province.name ? "İl Seçiniz" : province.name}

@@ -7,7 +7,14 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
-import { Text, Button, Divider, ListItem, Avatar } from "react-native-elements";
+import {
+  Text,
+  Button,
+  Divider,
+  ListItem,
+  Avatar,
+  ButtonGroup,
+} from "react-native-elements";
 import { AuthContext } from "../../contexts/AuthProvider";
 import {
   applyToAdvert,
@@ -25,6 +32,7 @@ function AdvertPreviewScreen({ route, navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [applications, setApplications] = useState(null);
   const [isApplicationsLoading, setIsApplicationsLoading] = useState(true);
+  const [selectedApps, setSelectedApps] = useState(0);
 
   const Button1 = () => <Text style={{ color: "green" }}>Seç</Text>;
   const Button2 = () => <Text style={{ color: "red" }}>Sil</Text>;
@@ -72,6 +80,8 @@ function AdvertPreviewScreen({ route, navigation }) {
       );
     }
   };
+
+  const buttonsApps = ["Bekleyenler", "Seçilenler"];
 
   useEffect(() => {
     if (userRole === "employee") {
@@ -182,11 +192,22 @@ function AdvertPreviewScreen({ route, navigation }) {
                   color: Colors.SECONDARY,
                   fontSize: Spacing.SCALE_32,
                   fontWeight: "bold",
+                  marginLeft: 8,
                 }}
               >
                 Başvurular
               </Text>
             </View>
+
+            <ButtonGroup
+              containerStyle={{ borderRadius: 24 }}
+              buttons={buttonsApps}
+              selectedIndex={selectedApps}
+              onPress={(index) => {
+                setSelectedApps(index);
+              }}
+            />
+            <Divider />
             {isApplicationsLoading ? (
               <View style={{ flex: 1 }}>
                 <ActivityIndicator />
@@ -293,10 +314,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.BACKGROUND,
   },
   topper: {
-    flex: 2,
+    flex: 1,
     backgroundColor: Colors.INFO,
     alignItems: "center",
     justifyContent: "center",
+    paddingBottom: 12,
   },
   bottomer: {
     flex: 5,
@@ -306,7 +328,7 @@ const styles = StyleSheet.create({
   infoTextStyle: {
     fontSize: 18,
     color: Colors.SECONDARY,
-    paddingVertical: 8,
+    paddingVertical: 4,
     fontWeight: "bold",
   },
 });

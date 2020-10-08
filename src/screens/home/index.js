@@ -149,6 +149,13 @@ const HomeScreen = ({ navigation }) => {
             Yakınımdaki İlanlar
           </Text>
           <Divider />
+          {advertsNearMe && advertsNearMe.length === 0 && (
+            <View>
+              <Text style={{ fontSize: 18, marginTop: 8 }}>
+                Yakınımda ilan bulunamadı.
+              </Text>
+            </View>
+          )}
           {isLoading === false && advertsNearMe === null && (
             <View
               style={{

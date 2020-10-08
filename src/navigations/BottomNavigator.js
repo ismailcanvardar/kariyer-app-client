@@ -215,7 +215,7 @@ const TabNavigator = () => {
         name="Search"
         options={{
           tabBarIcon: (tabInfo) => tabBarIcon(tabInfo, "search"),
-          tabBarLabel: "Ara",
+          tabBarLabel: "İlan Ara",
         }}
         component={SearchStack}
       />
