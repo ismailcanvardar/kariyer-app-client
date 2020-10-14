@@ -1,1 +1,1 @@
-export const API_ENDPOINT = "https://kariyer-app-api.azurewebsites.net/api";
+export const API_ENDPOINT = "https://tarimkariyerapi.azurewebsites.net/api";
