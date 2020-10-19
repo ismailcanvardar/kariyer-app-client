@@ -5,10 +5,17 @@ import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import { AuthContext } from "../../contexts/AuthProvider";
 import { getMyEmployeeProfile } from "../../api/employees";
 import { getMyEmployerProfile } from "../../api/employers";
-import { Avatar, Text, Divider, ListItem, Badge } from "react-native-elements";
+import {
+  Avatar,
+  Text,
+  Divider,
+  ListItem,
+  Badge,
+  Button,
+} from "react-native-elements";
 import { Rating } from "react-native-rating-element";
 
-function ProfileScreen({ route }) {
+function ProfileScreen({ route, navigation }) {
   const [user, setUser] = useState(null);
   const { logoutUser, userToken, userRole } = useContext(AuthContext);
 
@@ -92,6 +99,12 @@ function ProfileScreen({ route }) {
                 direction="row"
               />
             )}
+            <View style={{ marginTop: 10 }}>
+              <Button
+                title="Profili düzenle"
+                onPress={() => navigation.navigate("EditProfile")}
+              />
+            </View>
           </View>
           {/* <Divider style={styles.dividerStyle} /> */}
           <View style={styles.listHolder}>

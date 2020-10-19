@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ToastAndroid,
 } from "react-native";
 import {
   ButtonGroup,
@@ -56,6 +57,10 @@ function RegisterScreen({ navigation }) {
     setSelectedIndex(index);
   };
 
+  const showToast = () => {
+    ToastAndroid.show("Kayıt olundu!", ToastAndroid.SHORT);
+  };
+
   const register = async () => {
     if (kvkkAgreement === false && userAgreement === false) {
       setCheckboxError(true);
@@ -82,14 +87,16 @@ function RegisterScreen({ navigation }) {
               campaignAllowance,
             },
             (data) => {
-              setIsRegistered(true);
-              sendVerificationEmail(
-                email,
-                (data) => {
-                  setVerificationCode(data.data.verificationCode);
-                },
-                (err) => console.log(err.response.data)
-              );
+              showToast();
+              navigation.navigate("Login");
+              // setIsRegistered(true);
+              // sendVerificationEmail(
+              //   email,
+              //   (data) => {
+              //     setVerificationCode(data.data.verificationCode);
+              //   },
+              //   (err) => console.log(err.response.data)
+              // );
             },
             (err) => {
               console.log(err.response.data);
@@ -114,15 +121,17 @@ function RegisterScreen({ navigation }) {
               campaignAllowance,
             },
             (data) => {
-              setIsRegistered(true);
-              sendVerificationEmail(
-                email,
-                (data) => {
-                  setVerificationCode(data.data.verificationCode);
-                  console.log(data.data.verificationCode);
-                },
-                (err) => console.log(err.response.data)
-              );
+              showToast();
+              navigation.navigate("Login");
+              // setIsRegistered(true);
+              // sendVerificationEmail(
+              //   email,
+              //   (data) => {
+              //     setVerificationCode(data.data.verificationCode);
+              //     console.log(data.data.verificationCode);
+              //   },
+              //   (err) => console.log(err.response.data)
+              // );
             },
             (err) => {
               console.log(err.response.data);

@@ -10,6 +10,7 @@ import AddAdvertScreen from "../screens/add-advert/index";
 import AdvertPreviewScreen from "../screens/advert-preview/index";
 import SearchedProfile from "../screens/searched-profile/index";
 import SearchedAdvert from "../screens/searched-advert/index";
+import EditProfileScreen from "../screens/edit-profile/index";
 import { AuthContext } from "../contexts/AuthProvider";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -167,6 +168,15 @@ const ProfileStack = () => {
         }}
         name="Profile"
         component={ProfileScreen}
+      />
+      <Stack.Screen
+        options={{
+          headerStyle: { backgroundColor: Colors.PRIMARY },
+          headerTintColor: Colors.WHITE,
+          headerTitle: "Profili Düzenle",
+        }}
+        name="EditProfile"
+        component={EditProfileScreen}
       />
     </Stack.Navigator>
   );
