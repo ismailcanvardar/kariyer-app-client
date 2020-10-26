@@ -19,6 +19,17 @@ function ApplicationsScreen({ navigation }) {
   const [myApplications, setMyApplications] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // The screen is focused
+      // Call any action
+      getEmployeesApplications();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   const getEmployeesApplications = () => {
     getMyApplication(
       userToken,
@@ -56,7 +67,20 @@ function ApplicationsScreen({ navigation }) {
           Başvurularım
         </Text>
       </View>
-      {refreshing ? <ActivityIndicator /> : null}
+      {refreshing && <ActivityIndicator />}
+      {myApplications !== null && myApplications.length === 0 && (
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Text
+            style={{
+              color: Colors.SECONDARY,
+              fontWeight: "bold",
+              marginTop: 24,
+            }}
+          >
+            Başvurunuz bulunmamaktadır.
+          </Text>
+        </View>
+      )}
       <View
         style={{
           paddingTop: Spacing.SCALE_8,

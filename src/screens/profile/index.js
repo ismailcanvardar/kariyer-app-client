@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
 import Constants from "expo-constants";
 import { Colors, Spacing, Mixins, Typography } from "../../styles/index";
 import { AuthContext } from "../../contexts/AuthProvider";
@@ -14,9 +14,11 @@ import {
   Button,
 } from "react-native-elements";
 import { Rating } from "react-native-rating-element";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 function ProfileScreen({ route, navigation }) {
   const [user, setUser] = useState(null);
+  const [aboutEmployee, setAboutEmployee] = useState(null);
   const { logoutUser, userToken, userRole } = useContext(AuthContext);
 
   useEffect(() => {
@@ -32,7 +34,9 @@ function ProfileScreen({ route, navigation }) {
       getMyEmployeeProfile(
         userToken,
         (data) => {
-          setUser(data.data);
+          console.log(data.data[0].employee);
+          setUser(data.data[0].employee);
+          setAboutEmployee(data.data[0].aboutEmployee);
         },
         (e) => console.log(e.response.data.title)
       );
@@ -40,7 +44,7 @@ function ProfileScreen({ route, navigation }) {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       {user !== null ? (
         <>
           <View style={styles.avatarHolder}>
@@ -53,7 +57,7 @@ function ProfileScreen({ route, navigation }) {
                   //   uri:
                   //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
                   // }}
-                  title="TK"
+                  title={`${user.name[0]} ${user.name[1]}`}
                   onPress={() => null}
                   activeOpacity={0.7}
                   containerStyle={{
@@ -68,7 +72,7 @@ function ProfileScreen({ route, navigation }) {
                   //   uri:
                   //     "https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg",
                   // }}
-                  title="TK"
+                  title={`${user.name[0]} ${user.name[0]}`}
                   onPress={() => null}
                   activeOpacity={0.7}
                   containerStyle={{
@@ -99,12 +103,28 @@ function ProfileScreen({ route, navigation }) {
                 direction="row"
               />
             )}
-            <View style={{ marginTop: 10 }}>
-              <Button
-                title="Profili düzenle"
-                onPress={() => navigation.navigate("EditProfile")}
-              />
-            </View>
+            {userRole === "employee" && (
+              <View style={{ marginTop: 10 }}>
+                <Button
+                  icon={
+                    <Icon
+                      name="edit"
+                      style={{ marginRight: 5 }}
+                      size={15}
+                      color={Colors.PRIMARY}
+                    />
+                  }
+                  type="clear"
+                  title="Profili düzenle"
+                  onPress={() =>
+                    navigation.navigate("EditProfile", {
+                      user,
+                      aboutEmployee,
+                    })
+                  }
+                />
+              </View>
+            )}
           </View>
           {/* <Divider style={styles.dividerStyle} /> */}
           <View style={styles.listHolder}>
@@ -139,12 +159,42 @@ function ProfileScreen({ route, navigation }) {
                 <ListItem.Subtitle>{user.address}</ListItem.Subtitle>
               </ListItem.Content>
             </ListItem>
+            {aboutEmployee !== null && (
+              <>
+                <ListItem
+                  key={"job"}
+                  bottomDivider
+                  containerStyle={{ backgroundColor: Colors.BACKGROUND }}
+                >
+                  <ListItem.Content style={{ paddingHorizontal: 24 }}>
+                    <ListItem.Title>{"Meslek"}</ListItem.Title>
+                    <ListItem.Subtitle>
+                      {aboutEmployee.job ? aboutEmployee.job : "Belirtilmedi"}
+                    </ListItem.Subtitle>
+                  </ListItem.Content>
+                </ListItem>
+                <ListItem
+                  key={"briefInformation"}
+                  bottomDivider
+                  containerStyle={{ backgroundColor: Colors.BACKGROUND }}
+                >
+                  <ListItem.Content style={{ paddingHorizontal: 24 }}>
+                    <ListItem.Title>{"Geçmiş / Tecrübeler"}</ListItem.Title>
+                    <ListItem.Subtitle>
+                      {aboutEmployee.briefInformation
+                        ? aboutEmployee.briefInformation
+                        : "Belirtilmedi"}
+                    </ListItem.Subtitle>
+                  </ListItem.Content>
+                </ListItem>
+              </>
+            )}
           </View>
         </>
       ) : (
         <ActivityIndicator />
       )}
-    </View>
+    </ScrollView>
   );
 }
 
@@ -152,7 +202,7 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingTop: 8,
     backgroundColor: Colors.BACKGROUND,
   },

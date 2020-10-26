@@ -20,6 +20,17 @@ function AdvertsScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      // The screen is focused
+      // Call any action
+      getEmployersAdverts();
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   const getEmployersAdverts = () => {
     getMyAdverts(
       userToken,

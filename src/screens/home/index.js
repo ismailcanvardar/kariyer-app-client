@@ -91,7 +91,7 @@ const HomeScreen = ({ navigation }) => {
     searchEmployees(
       { searchCriteria: searchValue, offset: 0, limit: 5 },
       (data) => {
-        // console.log(data.data);
+        console.log(data.data);
         setSearchedEmployees(data.data);
       },
       (err) => {
@@ -387,9 +387,6 @@ const HomeScreen = ({ navigation }) => {
                       >
                         {`${item.name} ${item.surname}`}
                       </ListItem.Title>
-                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
-                        {item.phone}
-                      </ListItem.Subtitle>
                     </ListItem.Content>
                   </ListItem>
                 )}
@@ -474,9 +471,6 @@ const HomeScreen = ({ navigation }) => {
                       >
                         {`${item.name} ${item.surname}`}
                       </ListItem.Title>
-                      <ListItem.Subtitle style={{ color: Colors.SECONDARY }}>
-                        {item.totalRating}
-                      </ListItem.Subtitle>
                     </ListItem.Content>
                   </ListItem>
                 )}

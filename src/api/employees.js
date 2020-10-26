@@ -13,6 +13,17 @@ export const registerEmployee = (data, callback, errorcallback) => {
     });
 };
 
+export const updateEmployee = (data, callback, errorcallback) => {
+  axios
+    .post(`${API_ENDPOINT}/employees/update`, data)
+    .then((res) => {
+      callback !== null && callback(res);
+    })
+    .catch((err) => {
+      errorcallback !== null && errorcallback(err);
+    });
+};
+
 export const loginEmployee = (data, callback, errorcallback) => {
   axios
     .get(`${API_ENDPOINT}/employees/login/${data.email}/${data.password}`)
